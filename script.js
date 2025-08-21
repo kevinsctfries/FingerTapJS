@@ -16,7 +16,8 @@ function updateResultMessage() {
       2
     )}s, Taps per Second: ${metrics.tapsPerSecond.toFixed(2)}`;
   } else {
-    resultElement.textContent = "Tap index and thumb together!";
+    resultElement.textContent =
+      "Tap index and thumb together with either hand!";
   }
   resultElement.style.display = "block";
 }
@@ -44,9 +45,19 @@ hands.onResults(results => {
     canvasElement.height
   );
 
-  if (results.multiHandLandmarks) {
+  if (results.multiHandLandmarks && results.multiHandedness) {
+    let primaryHandIndex = 0;
+    if (results.multiHandLandmarks.length > 1) {
+      const rightHandIndex = results.multiHandedness.findIndex(
+        h => h.label === "Right"
+      );
+      primaryHandIndex = rightHandIndex !== -1 ? rightHandIndex : 0;
+    }
+
     results.multiHandLandmarks.forEach((landmarks, index) => {
-      fingerTapEffect(landmarks, canvasCtx, results, index);
+      const handedness = results.multiHandedness[index];
+      const isPrimaryHand = index === primaryHandIndex;
+      fingerTapEffect(landmarks, canvasCtx, handedness, isPrimaryHand);
     });
   }
 
