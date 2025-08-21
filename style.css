@@ -1,0 +1,83 @@
+/* Reset + base styles */
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #1a1a1a, #0d0d0d);
+  font-family: "Segoe UI", Roboto, sans-serif;
+  color: #fff;
+}
+
+/* Container for video + canvas + result + controls */
+.container {
+  position: relative;
+  width: 640px;
+  text-align: center;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  padding: 20px;
+}
+
+/* Hide raw webcam video */
+#webcam {
+  display: none;
+}
+
+/* Canvas overlay */
+#overlay {
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Result text */
+#result {
+  margin-top: 16px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #e0e0e0;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-block;
+  min-width: 200px;
+}
+
+/* Control buttons under the text */
+.controls {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.controls button {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.controls button:hover {
+  background: #3a3a3a;
+}
+
+.controls button:active {
+  background: #222;
+  transform: translateY(1px);
+}
+
+/* Highlight active button */
+.controls button.active {
+  background: #555;
+  color: #fff;
+}
