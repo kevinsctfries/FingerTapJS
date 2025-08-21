@@ -45,6 +45,8 @@ hands.onResults(results => {
   canvasCtx.save();
   canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
+  canvasCtx.scale(-1, 1);
+  canvasCtx.translate(-canvasElement.width, 0);
   canvasCtx.drawImage(
     results.image,
     0,
@@ -52,6 +54,7 @@ hands.onResults(results => {
     canvasElement.width,
     canvasElement.height
   );
+  canvasCtx.restore();
 
   if (results.multiHandLandmarks && results.multiHandedness) {
     let primaryHandIndex = 0;
@@ -65,7 +68,11 @@ hands.onResults(results => {
     results.multiHandLandmarks.forEach((landmarks, index) => {
       const handedness = results.multiHandedness[index];
       const isPrimaryHand = index === primaryHandIndex;
-      fingerTapEffect(landmarks, canvasCtx, handedness, isPrimaryHand);
+      const flippedLandmarks = landmarks.map(landmark => ({
+        ...landmark,
+        x: 1 - landmark.x,
+      }));
+      fingerTapEffect(flippedLandmarks, canvasCtx, handedness, isPrimaryHand);
     });
   }
 
