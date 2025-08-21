@@ -32,7 +32,10 @@ export function fingerTapEffect(
   handedness,
   isPrimaryHand
 ) {
-  if (!landmarks || landmarks.length < 21) return;
+  if (!landmarks || landmarks.length < 21) {
+    console.warn("Invalid landmarks data:", landmarks);
+    return;
+  }
 
   const thumbTip = landmarks[4]; // thumb tip
   const indexTip = landmarks[8]; // index tip
@@ -107,10 +110,17 @@ export function fingerTapEffect(
 
   // handedness label
   if (handedness && handedness.label) {
+    const labelOffset = 20;
+    const labelText = handedness.label === "Left" ? "R" : "L";
+
+    const labelX = labelText === "R" ? midX - labelOffset : midX + labelOffset;
+    const labelY = midY;
+
     canvasCtx.font = "16px Arial";
     canvasCtx.fillStyle = isPrimaryHand ? "blue" : "gray";
-    const displayLabel = handedness.label === "Left" ? "R" : "L";
-    canvasCtx.fillText(displayLabel, midX + 20, midY);
+    canvasCtx.textBaseline = "middle";
+    canvasCtx.textAlign = labelText === "R" ? "right" : "left";
+    canvasCtx.fillText(labelText, labelX, labelY);
   }
 }
 
