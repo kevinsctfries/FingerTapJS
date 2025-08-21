@@ -12,7 +12,9 @@ function updateResultMessage() {
       metrics.tapCount
     }, Mean ITI: ${metrics.meanITI.toFixed(
       2
-    )}s, Variability: ${metrics.sdITI.toFixed(2)}s`;
+    )}s, Variability: ${metrics.sdITI.toFixed(
+      2
+    )}s, Taps per Second: ${metrics.tapsPerSecond.toFixed(2)}`;
   } else {
     resultElement.textContent = "Tap index and thumb together!";
   }
