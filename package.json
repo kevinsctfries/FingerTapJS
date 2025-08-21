@@ -1,5 +1,5 @@
 {
-  "name": "FingerTapJS",
+  "name": "fingertapjs",
   "version": "1.0.0",
   "description": "A browser-based finger tapping test built with JavaScript and MediaPipe. This tool measures tap frequency, inter-tap interval (ITI), and variability between taps, providing quantitative metrics that can be useful for motor and cognitive research.",
   "main": "fingertap.js",
