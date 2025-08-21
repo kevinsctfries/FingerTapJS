@@ -1,12 +1,7 @@
-let lastTapTime = 0;
-let taps = [];
-let isTouching = false;
-const MIN_TAP_INTERVAL = 300; // minimum time (in milliseconds) between taps
-const TAP_THRESHOLD = 40; // distance threshold for thumb-index proximity
+import { recordTap } from "./metrics.js";
 
 // relevant landmark indices for partial skeleton
 const PARTIAL_CONNECTIONS = [
-  // palm
   [0, 1],
   [1, 2],
   [2, 5],
@@ -14,13 +9,9 @@ const PARTIAL_CONNECTIONS = [
   [9, 13],
   [13, 17],
   [0, 17],
-
-  // thumb
   [1, 2],
   [2, 3],
   [3, 4],
-
-  // index finger
   [5, 6],
   [6, 7],
   [7, 8],
@@ -37,33 +28,21 @@ export function fingerTapEffect(
     return;
   }
 
-  const thumbTip = landmarks[4]; // thumb tip
-  const indexTip = landmarks[8]; // index tip
-
+  const thumbTip = landmarks[4];
+  const indexTip = landmarks[8];
   const x1 = thumbTip.x * canvasCtx.canvas.width;
   const y1 = thumbTip.y * canvasCtx.canvas.height;
   const x2 = indexTip.x * canvasCtx.canvas.width;
   const y2 = indexTip.y * canvasCtx.canvas.height;
-
   const distance = Math.hypot(x2 - x1, y2 - y1);
   const now = performance.now();
 
+  // Record tap for primary hand
   if (isPrimaryHand) {
-    if (
-      distance < TAP_THRESHOLD &&
-      !isTouching &&
-      now - lastTapTime >= MIN_TAP_INTERVAL
-    ) {
-      isTouching = true;
-      const interval = lastTapTime > 0 ? (now - lastTapTime) / 1000 : null;
-      if (interval) taps.push(interval);
-      lastTapTime = now;
-    } else if (distance >= TAP_THRESHOLD) {
-      isTouching = false;
-    }
+    recordTap(distance, now);
   }
 
-  // draw partial skeleton
+  // draw skeleton structure
   canvasCtx.strokeStyle = "rgba(0,0,0,0.7)";
   canvasCtx.lineWidth = 2;
   PARTIAL_CONNECTIONS.forEach(([startIdx, endIdx]) => {
@@ -83,7 +62,7 @@ export function fingerTapEffect(
     }
   });
 
-  // visualize tracked points
+  // draw points
   [0, 1, 2, 3, 4, 5, 6, 7, 8].forEach(idx => {
     const lm = landmarks[idx];
     canvasCtx.beginPath();
@@ -99,12 +78,12 @@ export function fingerTapEffect(
     canvasCtx.closePath();
   });
 
+  // draw sphere in between index and thumb
   const midX = (x1 + x2) / 2;
   const midY = (y1 + y2) / 2;
   canvasCtx.beginPath();
   canvasCtx.arc(midX, midY, 15, 0, Math.PI * 2);
-  canvasCtx.fillStyle =
-    isPrimaryHand && distance < TAP_THRESHOLD ? "limegreen" : "gray";
+  canvasCtx.fillStyle = isPrimaryHand && distance < 30 ? "limegreen" : "gray"; // 30px matches TAP_THRESHOLD
   canvasCtx.fill();
   canvasCtx.closePath();
 
@@ -112,7 +91,6 @@ export function fingerTapEffect(
   if (handedness && handedness.label) {
     const labelOffset = 20;
     const labelText = handedness.label === "Left" ? "R" : "L";
-
     const labelX = labelText === "R" ? midX - labelOffset : midX + labelOffset;
     const labelY = midY;
 
@@ -122,26 +100,4 @@ export function fingerTapEffect(
     canvasCtx.textAlign = labelText === "R" ? "right" : "left";
     canvasCtx.fillText(labelText, labelX, labelY);
   }
-}
-
-export function getTapMetrics() {
-  if (taps.length === 0) return null;
-
-  const mean = taps.reduce((a, b) => a + b, 0) / taps.length;
-  const variance =
-    taps.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / taps.length;
-  const sd = Math.sqrt(variance);
-
-  return {
-    tapCount: taps.length,
-    meanITI: mean,
-    sdITI: sd,
-    tapsPerSecond: 1 / mean,
-  };
-}
-
-export function resetTaps() {
-  taps = [];
-  lastTapTime = 0;
-  isTouching = false;
 }

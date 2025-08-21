@@ -1,4 +1,5 @@
-import { fingerTapEffect, getTapMetrics } from "./fingertap.js";
+import { fingerTapEffect } from "./fingertap.js";
+import { getTapMetrics } from "./metrics.js";
 
 const videoElement = document.getElementById("webcam");
 const canvasElement = document.getElementById("overlay");
@@ -42,11 +43,10 @@ hands.setOptions({
 });
 
 hands.onResults(results => {
-  canvasCtx.save();
   canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
+  canvasCtx.save();
+  canvasCtx.translate(canvasElement.width, 0);
   canvasCtx.scale(-1, 1);
-  canvasCtx.translate(-canvasElement.width, 0);
   canvasCtx.drawImage(
     results.image,
     0,
@@ -59,27 +59,27 @@ hands.onResults(results => {
   if (results.multiHandLandmarks && results.multiHandedness) {
     let primaryHandIndex = 0;
     if (results.multiHandLandmarks.length > 1) {
-      const rightHandIndex = results.multiHandedness.findIndex(
+      const rightIdx = results.multiHandedness.findIndex(
         h => h.label === "Right"
       );
-      primaryHandIndex = rightHandIndex !== -1 ? rightHandIndex : 0;
+      if (rightIdx !== -1) primaryHandIndex = rightIdx;
     }
 
     results.multiHandLandmarks.forEach((landmarks, index) => {
       const handedness = results.multiHandedness[index];
       const isPrimaryHand = index === primaryHandIndex;
-      const flippedLandmarks = landmarks.map(landmark => ({
-        ...landmark,
-        x: 1 - landmark.x,
-      }));
-      fingerTapEffect(flippedLandmarks, canvasCtx, handedness, isPrimaryHand);
+
+      // flip landmarks horizontally to match the unmirrored video
+      const flipped = landmarks.map(lm => ({ ...lm, x: 1 - lm.x }));
+
+      fingerTapEffect(flipped, canvasCtx, handedness, isPrimaryHand);
     });
   }
 
-  canvasCtx.restore();
   updateResultMessage();
 });
 
+// start webcam via MediaPipe
 const camera = new Camera(videoElement, {
   onFrame: async () => {
     await hands.send({ image: videoElement });
