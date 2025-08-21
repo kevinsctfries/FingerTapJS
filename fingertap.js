@@ -1,8 +1,30 @@
 let lastTapTime = 0;
 let taps = [];
 let isTouching = false;
-const MIN_TAP_INTERVAL = 300; // Minimum time (ms) between taps
-const TAP_THRESHOLD = 40; // Distance threshold for thumb-index proximity
+const MIN_TAP_INTERVAL = 300; // minimum time (in milliseconds) between taps
+const TAP_THRESHOLD = 40; // distance threshold for thumb-index proximity
+
+// relevant landmark indices for partial skeleton
+const PARTIAL_CONNECTIONS = [
+  // palm
+  [0, 1],
+  [1, 2],
+  [2, 5],
+  [5, 9],
+  [9, 13],
+  [13, 17],
+  [0, 17],
+
+  // thumb
+  [1, 2],
+  [2, 3],
+  [3, 4],
+
+  // index finger
+  [5, 6],
+  [6, 7],
+  [7, 8],
+];
 
 export function fingerTapEffect(
   landmarks,
@@ -10,23 +32,10 @@ export function fingerTapEffect(
   handedness,
   isPrimaryHand
 ) {
-  if (
-    !landmarks ||
-    !canvasCtx ||
-    !Array.isArray(landmarks) ||
-    landmarks.length < 21
-  ) {
-    console.warn("Invalid landmarks data:", landmarks);
-    return;
-  }
+  if (!landmarks || landmarks.length < 21) return;
 
-  const thumbTip = landmarks[4]; // Thumb tip
-  const indexTip = landmarks[8]; // Index tip
-
-  if (!thumbTip || !indexTip || !thumbTip.x || !indexTip.x) {
-    console.warn("Missing thumb or index tip landmarks:", landmarks);
-    return;
-  }
+  const thumbTip = landmarks[4]; // thumb tip
+  const indexTip = landmarks[8]; // index tip
 
   const x1 = thumbTip.x * canvasCtx.canvas.width;
   const y1 = thumbTip.y * canvasCtx.canvas.height;
@@ -44,14 +53,48 @@ export function fingerTapEffect(
     ) {
       isTouching = true;
       const interval = lastTapTime > 0 ? (now - lastTapTime) / 1000 : null;
-      if (interval) {
-        taps.push(interval);
-      }
+      if (interval) taps.push(interval);
       lastTapTime = now;
     } else if (distance >= TAP_THRESHOLD) {
       isTouching = false;
     }
   }
+
+  // draw partial skeleton
+  canvasCtx.strokeStyle = "rgba(0,0,0,0.7)";
+  canvasCtx.lineWidth = 2;
+  PARTIAL_CONNECTIONS.forEach(([startIdx, endIdx]) => {
+    const start = landmarks[startIdx];
+    const end = landmarks[endIdx];
+    if (start && end) {
+      canvasCtx.beginPath();
+      canvasCtx.moveTo(
+        start.x * canvasCtx.canvas.width,
+        start.y * canvasCtx.canvas.height
+      );
+      canvasCtx.lineTo(
+        end.x * canvasCtx.canvas.width,
+        end.y * canvasCtx.canvas.height
+      );
+      canvasCtx.stroke();
+    }
+  });
+
+  // visualize tracked points
+  [0, 1, 2, 3, 4, 5, 6, 7, 8].forEach(idx => {
+    const lm = landmarks[idx];
+    canvasCtx.beginPath();
+    canvasCtx.arc(
+      lm.x * canvasCtx.canvas.width,
+      lm.y * canvasCtx.canvas.height,
+      5,
+      0,
+      Math.PI * 2
+    );
+    canvasCtx.fillStyle = idx === 4 || idx === 8 ? "limegreen" : "blue";
+    canvasCtx.fill();
+    canvasCtx.closePath();
+  });
 
   const midX = (x1 + x2) / 2;
   const midY = (y1 + y2) / 2;
@@ -62,6 +105,7 @@ export function fingerTapEffect(
   canvasCtx.fill();
   canvasCtx.closePath();
 
+  // handedness label
   if (handedness && handedness.label) {
     canvasCtx.font = "16px Arial";
     canvasCtx.fillStyle = isPrimaryHand ? "blue" : "gray";
