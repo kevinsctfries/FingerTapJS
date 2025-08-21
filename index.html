@@ -7,16 +7,52 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="container">
-      <video id="webcam" autoplay playsinline></video>
-      <canvas id="overlay" width="640" height="480"></canvas>
-      <div id="result">Tap index and thumb together!</div>
+    <div class="app-container">
+      <div class="main">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="overlay" width="640" height="480"></canvas>
+        <div id="result">Tap index and thumb together!</div>
+      </div>
+
+      <aside class="sidebar">
+        <h2>Finger Tap Test</h2>
+        <p>
+          This web-based test measures your finger-tapping speed and consistency
+          using JavaScript and Mediapipe hand tracking. It is commonly used in
+          cognitive research.
+        </p>
+
+        <h3>Metrics Explained</h3>
+        <ul>
+          <li>
+            <strong>Mean ITI:</strong> The average inter-tap interval, i.e., the
+            mean time (in seconds) between consecutive taps.
+          </li>
+          <li>
+            <strong>Variability (SD ITI):</strong> The standard deviation of the
+            inter-tap intervals, showing how consistent your tapping is.
+          </li>
+          <li>
+            <strong>Tap Count:</strong> The total number of detected taps during
+            the session.
+          </li>
+          <li>
+            <strong>Taps per Second:</strong> How many taps you performed per
+            second, calculated from the mean ITI.
+          </li>
+        </ul>
+
+        <h3>How to Use</h3>
+        <ol>
+          <li>Place your hand in view of the webcam.</li>
+          <li>Tap your thumb and index finger together repeatedly.</li>
+          <li>Watch the metrics update in real-time below the video.</li>
+        </ol>
+      </aside>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-
     <script type="module" src="script.js"></script>
   </body>
 </html>
