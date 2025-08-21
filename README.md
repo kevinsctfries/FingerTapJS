@@ -27,7 +27,6 @@ A browser-based finger tapping test built with JavaScript and MediaPipe. This to
 - \`style.css\` — Styling for the interface.
 - \`script.js\` — Core logic for the finger tap test.
 - \`fingertap.js\` — Finger tap detection and metrics calculation.
-- \`helpers.js\` — Utility functions (optional).
 
 ## License
 
