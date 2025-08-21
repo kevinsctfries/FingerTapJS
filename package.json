@@ -1,0 +1,28 @@
+{
+  "name": "FingerTapJS",
+  "version": "1.0.0",
+  "description": "A browser-based finger tapping test built with JavaScript and MediaPipe. This tool measures tap frequency, inter-tap interval (ITI), and variability between taps, providing quantitative metrics that can be useful for motor and cognitive research.",
+  "main": "fingertap.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kevinsctfries/FingerTapJS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kevinsctfries/FingerTapJS/issues"
+  },
+  "homepage": "https://github.com/kevinsctfries/FingerTapJS#readme",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {}
+  }
+}
