@@ -2,7 +2,7 @@ let lastTapTime = 0;
 let taps = [];
 let isTouching = false;
 const MIN_TAP_INTERVAL = 300; // Minimum time (ms) between taps
-const TAP_THRESHOLD = 30; // Distance threshold for thumb-index proximity
+const TAP_THRESHOLD = 40; // Distance threshold for thumb-index proximity
 
 export function fingerTapEffect(
   landmarks,

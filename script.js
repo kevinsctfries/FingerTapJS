@@ -4,6 +4,14 @@ const videoElement = document.getElementById("webcam");
 const canvasElement = document.getElementById("overlay");
 const canvasCtx = canvasElement.getContext("2d");
 const resultElement = document.getElementById("result");
+const disclaimerElement = document.getElementById("disclaimer");
+const disclaimerCloseButton = document.getElementById("disclaimer-close");
+
+if (disclaimerCloseButton && disclaimerElement) {
+  disclaimerCloseButton.addEventListener("click", () => {
+    disclaimerElement.style.display = "none";
+  });
+}
 
 function updateResultMessage() {
   const metrics = getTapMetrics();
